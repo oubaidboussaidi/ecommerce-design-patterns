@@ -1,29 +1,16 @@
 package com.exemple.dao;
 
 import com.exemple.model.User;
+import com.exemple.util.HibernateUtil;
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.cfg.Configuration;
 import org.hibernate.query.Query;
 
 import java.util.List;
 
 public class UserDao {
 
-    private static final SessionFactory factory;
-
-    static {
-        factory = new Configuration()
-                .configure("hibernate.cfg.xml")
-                .addAnnotatedClass(User.class)
-                .buildSessionFactory();
-    }
-
-    public UserDao() {
-    }
-
     public void save(User u) {
-        try (Session session = factory.getCurrentSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
             session.save(u);
             session.getTransaction().commit();
@@ -35,16 +22,15 @@ public class UserDao {
 
     public User verifyUser(String login, String password) {
         User verifiedUser = null;
-        try (Session session = factory.getCurrentSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Query<User> query = session.createQuery(
                     "FROM User WHERE login = :login AND motdepasse = :password", User.class);
             query.setParameter("login", login);
-            query.setParameter("password", password); // A hasher dans un vrai contexte sécurisé
+            query.setParameter("password", password);
 
             verifiedUser = query.uniqueResult();
-
             session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
@@ -53,7 +39,7 @@ public class UserDao {
     }
 
     public boolean isEmailExists(String email) {
-        try (Session session = factory.getCurrentSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Query<Long> query = session.createQuery(
@@ -72,7 +58,7 @@ public class UserDao {
 
     public List<User> getAllUsers() {
         List<User> users = null;
-        try (Session session = factory.getCurrentSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
             users = session.createQuery("FROM User", User.class).getResultList();
             session.getTransaction().commit();
@@ -84,7 +70,7 @@ public class UserDao {
 
     public List<User> searchUsersByEmail(String emailFilter) {
         List<User> users = null;
-        try (Session session = factory.getCurrentSession()) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
 
             Query<User> query = session.createQuery(
