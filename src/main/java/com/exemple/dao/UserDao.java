@@ -7,8 +7,9 @@ import org.hibernate.query.Query;
 
 import java.util.List;
 
-public class UserDao {
+public class UserDao implements IUserDao {
 
+    @Override
     public void save(User u) {
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
@@ -20,6 +21,7 @@ public class UserDao {
         }
     }
 
+    @Override
     public User verifyUser(String login, String password) {
         User verifiedUser = null;
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
@@ -38,6 +40,7 @@ public class UserDao {
         return verifiedUser;
     }
 
+    @Override
     public boolean isEmailExists(String email) {
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
             session.beginTransaction();
@@ -56,6 +59,7 @@ public class UserDao {
         }
     }
 
+    @Override
     public List<User> getAllUsers() {
         List<User> users = null;
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
@@ -68,6 +72,7 @@ public class UserDao {
         return users;
     }
 
+    @Override
     public List<User> searchUsersByEmail(String emailFilter) {
         List<User> users = null;
         try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
