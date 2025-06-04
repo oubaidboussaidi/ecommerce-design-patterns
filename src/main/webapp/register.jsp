@@ -1,121 +1,152 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Register</title>
+    <title>Inscription</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 0;
+            background: linear-gradient(135deg, #e0f7fa, #e1f5fe);
+            font-family: 'Segoe UI', sans-serif;
             display: flex;
-            justify-content: center;
             align-items: center;
+            justify-content: center;
             height: 100vh;
+            margin: 0;
         }
-        .container {
-            background-color: white;
-            padding: 30px;
-            border-radius: 5px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            width: 350px;
+
+        .login-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 400px;
         }
-        h2 {
+
+        .login-container h2 {
             text-align: center;
-            color: #333;
+            margin-bottom: 30px;
+            color: #0077b6;
+            font-size: 28px;
+        }
+
+        .form-group {
             margin-bottom: 20px;
         }
-        .form-group {
-            margin-bottom: 15px;
-        }
+
         label {
             display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-            color: #555;
+            margin-bottom: 6px;
+            font-weight: 600;
+            color: #333;
         }
-        input[type="text"], input[type="password"] {
+
+        input[type="text"],
+        input[type="password"],
+        select {
             width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .btn {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
             font-size: 16px;
+            background-color: #f9f9f9;
         }
-        .btn:hover {
-            background-color: #45a049;
+
+        input:focus, select:focus {
+            border-color: #0077b6;
+            outline: none;
+            background-color: #fff;
         }
-        .error-message {
-            color: #f44336;
-            margin-top: 10px;
-            text-align: center;
+
+        button {
+            width: 100%;
+            padding: 14px;
+            background-color: #0077b6;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
         }
-        .success-message {
-            color: #4CAF50;
-            margin-top: 10px;
-            text-align: center;
+
+        button:hover {
+            background-color: #023e8a;
         }
-        .register-link {
-            text-align: center;
+
+        .message {
             margin-top: 15px;
+            text-align: center;
+            font-size: 14px;
         }
+
+        .error-message {
+            color: #e53935;
+        }
+
+        .success-message {
+            color: #43a047;
+        }
+
+        .register-link {
+            margin-top: 20px;
+            text-align: center;
+        }
+
         .register-link a {
-            color: #2196F3;
+            color: #0077b6;
             text-decoration: none;
+            font-weight: bold;
         }
+
         .register-link a:hover {
             text-decoration: underline;
         }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h2>Register</h2>
-        <form action="auth" method="post">
-            <!-- Hidden field for action -->
-            <input type="hidden" name="action" value="register">
+<div class="login-container">
+    <h2>Inscription</h2>
+    <form action="auth" method="post">
+        <input type="hidden" name="action" value="register">
 
-            <div class="form-group">
-                <label for="username">Email:</label>
-                <!-- Changed 'login' to 'username' -->
-                <input type="text" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" id="password" name="password" required>
-            </div>
-            <div class="form-group">
-                <label for="role">Role:</label>
-                <select id="role" name="role" required>
-                    <option value="">Select role</option>
-                    <option value="user">User</option>
-                    <option value="admin">Admin</option>
-                </select>
-            </div>
-            <button type="submit" class="btn">Register</button>
+        <div class="form-group">
+            <label for="username">Email</label>
+            <input type="text" id="username" name="username" placeholder="Entrez votre email" required>
+        </div>
 
+        <div class="form-group">
+            <label for="password">Mot de passe</label>
+            <input type="password" id="password" name="password" placeholder="Entrez votre mot de passe" required>
+        </div>
+
+        <div class="form-group">
+            <label for="role">Rôle</label>
+            <select id="role" name="role" required>
+                <option value="">Sélectionnez un rôle</option>
+                <option value="user">Utilisateur</option>
+                <option value="admin">Administrateur</option>
+            </select>
+        </div>
+
+        <button type="submit">S'inscrire</button>
+
+        <div class="message">
             <% if (request.getAttribute("error") != null) { %>
-                <div class="error-message"><%= request.getAttribute("error") %></div>
+            <div class="error-message"><%= request.getAttribute("error") %></div>
             <% } %>
             <% if (request.getAttribute("message") != null) { %>
-                <div class="success-message"><%= request.getAttribute("message") %></div>
+            <div class="success-message"><%= request.getAttribute("message") %></div>
             <% } %>
-        </form>
-
-        <div class="register-link">
-            Already have an account? <a href="login.jsp">Login here</a>
         </div>
+    </form>
+
+    <div class="register-link">
+        Vous avez déjà un compte ? <a href="login.jsp">Connectez-vous ici</a>
     </div>
+</div>
 </body>
 </html>
