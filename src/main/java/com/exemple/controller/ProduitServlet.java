@@ -1,6 +1,7 @@
 package com.exemple.controller;
 
-import com.exemple.dao.ProduitDaoImpl;
+import com.exemple.factory.DaoFactory;
+import com.exemple.dao.IProduitDao;
 import com.exemple.model.Produit;
 
 import jakarta.servlet.ServletException;
@@ -13,12 +14,12 @@ import java.util.List;
 @WebServlet("/produits")
 public class ProduitServlet extends HttpServlet {
 
-    private ProduitDaoImpl produitDao;
+    private IProduitDao produitDao;
 
     @Override
     public void init() throws ServletException {
         super.init();
-        produitDao = new ProduitDaoImpl();
+        produitDao = DaoFactory.getProduitDao();
     }
 
     @Override

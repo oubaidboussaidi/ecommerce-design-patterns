@@ -4,7 +4,8 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 
-import com.exemple.dao.UserDao;
+import com.exemple.factory.DaoFactory;
+import com.exemple.dao.IUserDao;
 import com.exemple.model.User;
 
 import java.io.IOException;
@@ -13,11 +14,11 @@ import java.util.List;
 @WebServlet("/users")
 public class UserController extends HttpServlet {
 
-    private UserDao userDao;
+    private IUserDao userDao;
 
     @Override
     public void init() throws ServletException {
-        userDao = new UserDao();
+        userDao = DaoFactory.getUserDao();
     }
 
     @Override

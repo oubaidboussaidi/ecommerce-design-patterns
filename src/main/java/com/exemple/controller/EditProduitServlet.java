@@ -1,6 +1,7 @@
 package com.exemple.controller;
 
-import com.exemple.dao.ProduitDaoImpl;
+import com.exemple.factory.DaoFactory;
+import com.exemple.dao.IProduitDao;
 import com.exemple.model.Produit;
 
 import jakarta.servlet.ServletException;
@@ -12,11 +13,11 @@ import java.io.IOException;
 @WebServlet("/editProduit")
 public class EditProduitServlet extends HttpServlet {
 
-    private ProduitDaoImpl produitDao;
+    private IProduitDao produitDao;
 
     @Override
     public void init() throws ServletException {
-        produitDao = new ProduitDaoImpl();
+        produitDao = DaoFactory.getProduitDao();
     }
 
     // GET: show form with product info
@@ -31,6 +32,8 @@ public class EditProduitServlet extends HttpServlet {
             if (produit != null) {
                 request.setAttribute("produit", produit);
                 request.getRequestDispatcher("editProduit.jsp").forward(request, response);
+            } else {
+                response.sendRedirect(request.getContextPath() + "/produits");
             }
         } catch (NumberFormatException e) {
             response.sendRedirect(request.getContextPath() + "/produits");
