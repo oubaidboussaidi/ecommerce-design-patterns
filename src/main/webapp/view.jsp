@@ -5,20 +5,22 @@
 <%@ page import="com.exemple.dao.ProduitDaoImpl" %>
 
 <%
-    // Authentication Check
-    User user = (User) session.getAttribute("user");
-    if (user == null) {
-        response.sendRedirect("login.jsp");
-        return;
-    }
+  User user = (User) session.getAttribute("user");
+  if (user == null) {
+    response.sendRedirect("login.jsp");
+    return;
+  }
 
-    // Load product list
-    List<Produit> produits = (List<Produit>) request.getAttribute("produits");
-    if (produits == null || produits.isEmpty()) {
-        ProduitDaoImpl produitDao = new ProduitDaoImpl();
-        produits = produitDao.getAllProduits();
-        request.setAttribute("produits", produits);
-    }
+  if (!"admin".equalsIgnoreCase(user.getRole())) {
+    response.sendRedirect("accueil.jsp");
+    return;
+  }
+
+  List<Produit> produits = (List<Produit>) request.getAttribute("produits");
+  if (produits == null || produits.isEmpty()) {
+    ProduitDaoImpl produitDao = new ProduitDaoImpl();
+    produits = produitDao.getAllProduits();
+  }
 %>
 
 <!DOCTYPE html>
@@ -27,10 +29,9 @@
   <meta charset="UTF-8">
   <title>Gestion des Produits</title>
   <style>
-    /* ✅ Ton CSS conservé tel quel */
     body {
       font-family: 'Segoe UI', sans-serif;
-      background: linear-gradient(to right, #ece9e6, #ffffff);
+      background: linear-gradient(to right, #f0f8ff, #ffffff);
       margin: 0;
       padding: 40px 20px;
     }
@@ -45,25 +46,24 @@
     h1 {
       text-align: center;
       margin-bottom: 30px;
-      color: #00695c;
+      color: #0077b6;
       font-size: 28px;
-      letter-spacing: 1px;
     }
     .tab {
       display: block;
       width: 200px;
-      margin: 0 auto 30px auto;
+      margin: 0 auto 30px;
       padding: 12px 24px;
       text-align: center;
-      border: 2px solid #00695c;
+      border: 2px solid #0077b6;
       border-radius: 50px;
-      color: #00695c;
-      background-color: #e0f2f1;
+      color: #0077b6;
+      background-color: #caf0f8;
       cursor: pointer;
       transition: all 0.3s;
     }
     .tab.active {
-      background-color: #00695c;
+      background-color: #0077b6;
       color: white;
     }
     .form-section {
@@ -94,7 +94,7 @@
     button {
       padding: 12px 24px;
       border: none;
-      background-color: #00695c;
+      background-color: #0077b6;
       color: white;
       border-radius: 50px;
       font-weight: bold;
@@ -103,7 +103,7 @@
       transition: background-color 0.3s;
     }
     button:hover {
-      background-color: #004d40;
+      background-color: #005f8f;
     }
     table {
       width: 100%;
@@ -116,7 +116,7 @@
       text-align: center;
     }
     th {
-      background-color: #00695c;
+      background-color: #0077b6;
       color: white;
       text-transform: uppercase;
     }
@@ -126,117 +126,106 @@
       margin: 0 5px;
       border-radius: 6px;
       text-decoration: none;
-      color: #00695c;
-      border: 1.5px solid #00695c;
-      background-color: #e0f2f1;
+      color: #0077b6;
+      border: 1.5px solid #0077b6;
+      background-color: #caf0f8;
       cursor: pointer;
       transition: all 0.3s;
       display: inline-block;
     }
     .btn-small:hover {
-      background-color: #00695c;
+      background-color: #0077b6;
       color: white;
-      text-decoration: none;
     }
     .actions {
       display: flex;
       justify-content: center;
       gap: 10px;
     }
-    .logout-btn {
-      background-color: #c62828;
-      margin-bottom: 20px;
-    }
-    .logout-btn:hover {
-      background-color: #8e0000;
-    }
   </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Bienvenue <%= user.getLogin() %></h1>
 
-    <!-- Logout form -->
-    <form action="logout" method="post">
-      <button type="submit" class="logout-btn">Déconnexion</button>
-    </form>
+<jsp:include page="navbar.jsp" />
 
-    <div class="tabs">
-      <div id="add-tab" class="tab" onclick="showSection('add')">➕ Ajouter un Produit</div>
-      <div id="list-tab" class="tab active" onclick="showSection('list')">📋 Liste des Produits</div>
-    </div>
+<div class="container">
+  <h1>Bienvenue <%= user.getLogin() %></h1>
 
-    <div id="add-section" class="form-section" style="display:none;">
-      <form action="produits" method="post">
-        <input type="hidden" name="action" value="add">
-
-        <label for="nomProduit">Nom du produit</label>
-        <input type="text" name="nomProduit" id="nomProduit" required>
-
-        <label for="prix">Prix (€)</label>
-        <input type="number" step="0.01" name="prix" id="prix" required>
-        <br>
-        <button type="submit">Ajouter</button>
-      </form>
-    </div>
-
-    <div id="list-section" class="form-section" style="display:block;">
-      <table>
-        <tr>
-          <th>ID</th>
-          <th>Nom</th>
-          <th>Prix</th>
-          <th>Actions</th>
-        </tr>
-
-        <%
-          if (!produits.isEmpty()) {
-            for (Produit p : produits) {
-        %>
-        <tr>
-          <td><%= p.getId() %></td>
-          <td><%= p.getNomProduit() %></td>
-          <td><%= p.getPrix() %></td>
-          <td class="actions">
-            <!-- Lien de modification avec ID en GET -->
-            <a href="editProduit?id=<%= p.getId() %>" class="btn-small" title="Modifier">✏️ Modifier</a>
-
-            <!-- Formulaire suppression POST -->
-            <form action="produits" method="post" style="display:inline;" onsubmit="return confirm('Supprimer ce produit ?');">
-              <input type="hidden" name="action" value="delete">
-              <input type="hidden" name="id" value="<%= p.getId() %>">
-              <button class="btn-small" type="submit" title="Supprimer">🗑️ Supprimer</button>
-            </form>
-          </td>
-        </tr>
-        <%
-            }
-          } else {
-        %>
-        <tr><td colspan="4">Aucun produit trouvé.</td></tr>
-        <% } %>
-      </table>
-    </div>
+  <div class="tabs">
+    <div id="add-tab" class="tab" onclick="showSection('add')">➕ Ajouter un Produit</div>
+    <div id="list-tab" class="tab active" onclick="showSection('list')">📋 Liste des Produits</div>
   </div>
 
-  <script>
-    function showSection(section) {
-      document.getElementById('add-tab').classList.remove('active');
-      document.getElementById('list-tab').classList.remove('active');
-      document.getElementById('add-section').style.display = 'none';
-      document.getElementById('list-section').style.display = 'none';
+  <!-- Add Product Section -->
+  <div id="add-section" class="form-section" style="display:none;">
+    <form action="produits" method="post">
+      <input type="hidden" name="action" value="add">
 
-      if (section === 'add') {
-        document.getElementById('add-tab').classList.add('active');
-        document.getElementById('add-section').style.display = 'block';
+      <label for="nomProduit">Nom du produit</label>
+      <input type="text" name="nomProduit" id="nomProduit" required>
+
+      <label for="prix">Prix (€)</label>
+      <input type="number" step="0.01" name="prix" id="prix" required>
+      <br>
+      <button type="submit">Ajouter</button>
+    </form>
+  </div>
+
+  <!-- Product List Section -->
+  <div id="list-section" class="form-section" style="display:block;">
+    <table>
+      <tr>
+        <th>ID</th>
+        <th>Nom</th>
+        <th>Prix</th>
+        <th>Actions</th>
+      </tr>
+      <%
+        if (!produits.isEmpty()) {
+          for (Produit p : produits) {
+      %>
+      <tr>
+        <td><%= p.getId() %></td>
+        <td><%= p.getNomProduit() %></td>
+        <td><%= p.getPrix() %></td>
+        <td class="actions">
+          <a href="editProduit?id=<%= p.getId() %>" class="btn-small">✏️ Modifier</a>
+          <form action="produits" method="post" style="display:inline;" onsubmit="return confirm('Supprimer ce produit ?');">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="id" value="<%= p.getId() %>">
+            <button class="btn-small" type="submit">🗑️ Supprimer</button>
+          </form>
+        </td>
+      </tr>
+      <%
+        }
       } else {
-        document.getElementById('list-tab').classList.add('active');
-        document.getElementById('list-section').style.display = 'block';
-      }
+      %>
+      <tr><td colspan="4">Aucun produit trouvé.</td></tr>
+      <% } %>
+    </table>
+  </div>
+</div>
+
+<script>
+  function showSection(section) {
+    document.getElementById('add-tab').classList.remove('active');
+    document.getElementById('list-tab').classList.remove('active');
+    document.getElementById('add-section').style.display = 'none';
+    document.getElementById('list-section').style.display = 'none';
+
+    if (section === 'add') {
+      document.getElementById('add-tab').classList.add('active');
+      document.getElementById('add-section').style.display = 'block';
+    } else {
+      document.getElementById('list-tab').classList.add('active');
+      document.getElementById('list-section').style.display = 'block';
     }
-    window.onload = function() {
-      showSection('list');
-    };
-  </script>
+  }
+
+  window.onload = function () {
+    showSection('list');
+  };
+</script>
 </body>
 </html>
