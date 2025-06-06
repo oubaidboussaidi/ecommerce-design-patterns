@@ -89,4 +89,37 @@ public class UserDao implements IUserDao {
         }
         return users;
     }
+    @Override
+    public void deleteByEmail(String email) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
+            session.beginTransaction();
+
+            Query<?> query = session.createQuery("DELETE FROM User WHERE login = :email");
+            query.setParameter("email", email);
+            int result = query.executeUpdate();
+
+            session.getTransaction().commit();
+            System.out.println("Deleted " + result + " user(s) with email: " + email);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void updateUserRole(String email, String newRole) {
+        try (Session session = HibernateUtil.getSessionFactory().getCurrentSession()) {
+            session.beginTransaction();
+
+            Query<?> query = session.createQuery("UPDATE User SET role = :newRole WHERE login = :email");
+            query.setParameter("newRole", newRole);
+            query.setParameter("email", email);
+            int result = query.executeUpdate();
+
+            session.getTransaction().commit();
+            System.out.println("Updated role for user with email: " + email + " to " + newRole);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
 }
