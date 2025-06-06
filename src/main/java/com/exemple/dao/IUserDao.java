@@ -10,4 +10,7 @@ public interface IUserDao {
     boolean isEmailExists(String email);
     List<User> getAllUsers();
     List<User> searchUsersByEmail(String emailFilter);
+    void deleteByEmail(String email);
+    void updateUserRole(String email, String newRole);
+
 }
