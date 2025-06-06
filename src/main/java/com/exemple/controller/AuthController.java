@@ -42,7 +42,7 @@ public class AuthController extends HttpServlet {
         String role = request.getParameter("role");
 
         if (login == null || password == null || role == null ||
-            login.isEmpty() || password.isEmpty() || role.isEmpty()) {
+                login.isEmpty() || password.isEmpty() || role.isEmpty()) {
             request.setAttribute("error", "All fields are required.");
             request.getRequestDispatcher("register.jsp").forward(request, response);
             return;
@@ -72,11 +72,13 @@ public class AuthController extends HttpServlet {
             HttpSession session = request.getSession();
             session.setAttribute("user", user);
 
+            // Redirect based on role
             if ("admin".equalsIgnoreCase(user.getRole())) {
-                response.sendRedirect("view.jsp");
+                response.sendRedirect("view.jsp"); // Admin dashboard
             } else {
-            	response.sendRedirect("view.jsp");
+                response.sendRedirect("accueil.jsp"); // Boutique for normal user
             }
+
         } else {
             request.setAttribute("error", "Invalid credentials");
             request.getRequestDispatcher("login.jsp").forward(request, response);
