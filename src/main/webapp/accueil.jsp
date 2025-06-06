@@ -28,23 +28,18 @@
     <style>
         body {
             margin: 0;
-            padding: 0;
             font-family: 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #e0f7fa, #e1f5fe);
-            display: flex;
-            justify-content: center;
-            align-items: start;
+            background: linear-gradient(to right, #d0eefe, #e3f2fd);
             min-height: 100vh;
-            padding: 40px 20px;
         }
 
         .container {
+            max-width: 900px;
+            margin: 40px auto;
             background: #fff;
             padding: 30px;
             border-radius: 12px;
             box-shadow: 0 6px 20px rgba(0, 0, 0, 0.1);
-            max-width: 900px;
-            width: 100%;
         }
 
         h1 {
@@ -69,7 +64,6 @@
             cursor: pointer;
             font-weight: bold;
             transition: background-color 0.3s ease;
-            float: right;
         }
 
         .logout-btn:hover {
@@ -137,22 +131,29 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            margin-bottom: 10px;
         }
 
         @media (max-width: 600px) {
             .products-list {
                 grid-template-columns: 1fr;
             }
+
+            .header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 10px;
+            }
         }
     </style>
 </head>
 <body>
+
+<jsp:include page="navbar.jsp" />
+
 <div class="container">
     <div class="header">
         <h1>Bienvenue, <%= user.getLogin() %></h1>
-        <form action="logout" method="post">
-            <button type="submit" class="logout-btn">Se déconnecter</button>
-        </form>
     </div>
 
     <h2>Nos produits</h2>
